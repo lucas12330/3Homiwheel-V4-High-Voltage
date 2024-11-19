@@ -21,6 +21,8 @@ private:
 
 public:
   Motor(int RPWM, int LPWM, int SpeedLimit);
+  Motor(int RPWM, int LPWM);
+
   ~Motor();
   // Permet la modification des pins d'un moteur
   void changePins(int RPWM, int LPWM);
