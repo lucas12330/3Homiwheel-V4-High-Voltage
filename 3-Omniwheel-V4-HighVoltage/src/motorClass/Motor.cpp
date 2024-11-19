@@ -1,7 +1,10 @@
 #include "Motor.h"
+#include <Arduino.h>
+#include <math.h>
 
-Motor::Motor(int RPWM, int LPWM)
+Motor::Motor(int RPWM, int LPWM, int SpeedLimit)
 {
+  this->m_speedLimit = SpeedLimit;
   this->m_RPWM = RPWM;
   this->m_LPWM = LPWM;
   pinMode(this->m_RPWM, OUTPUT);
@@ -20,26 +23,23 @@ void Motor::changePins(int RPWM, int LPWM)
   pinMode(this->m_RPWM, OUTPUT);
   pinMode(this->m_LPWM, OUTPUT);
 }
+void Motor::setRotation(rotation Rotation)
+{
+  this->m_rotation = Rotation;
+}
 
+// Speed entre 0 et 255, le sens de rotation est donc géré via une méthode externe
 int Motor::setSpeed(int speed)
 {
-  if (speed > 0 && speed < 127)
+  if(this->m_rotation == rotation::RELEASE)
   {
-    analogWrite(this->m_RPWM, speed);
-    analogWrite(this->m_LPWM, 0);
-    return 1;
-  }
-  else if (speed < 0 && speed > -127)
-  {
-    speed = -speed;
-    analogWrite(this->m_RPWM, 0);
-    analogWrite(this->m_LPWM, speed);
-    return -1;
-  }
-  else
-  {
-    analogWrite(this->m_RPWM, 0);
-    analogWrite(this->m_LPWM, 0);
     return 0;
-  }
+  } else if(this->m_rotation == rotation::FORWARD){
+     analogWrite(this->m_RPWM, speed);
+     analogWrite(this->m_LPWM, 0);
+    } else if (this-> m_rotation == rotation::BACKWARD){
+      analogWrite(this-> m_LPWM, speed);
+      analogWrite(this->m_RPWM, 0);
+    }
+
 }
