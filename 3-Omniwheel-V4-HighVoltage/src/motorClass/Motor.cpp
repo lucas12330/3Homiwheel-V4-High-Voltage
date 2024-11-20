@@ -1,6 +1,4 @@
 #include "Motor.h"
-#include <Arduino.h>
-#include <math.h>
 
 Motor::Motor(int RPWM, int LPWM, int SpeedLimit)
 {
