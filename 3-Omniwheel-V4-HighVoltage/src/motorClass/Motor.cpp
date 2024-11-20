@@ -1,3 +1,4 @@
+#pragma once
 #include "Motor.h"
 #include <Arduino.h>
 #include <math.h>
@@ -23,7 +24,7 @@ Motor::Motor(int RPWM, int LPWM)
 
 Motor::~Motor()
 {
-  setSpeed(0);
+  setSpeed(0, RELEASE);
 }
 
 void Motor::changePins(int RPWM, int LPWM)
@@ -33,14 +34,12 @@ void Motor::changePins(int RPWM, int LPWM)
   pinMode(this->m_RPWM, OUTPUT);
   pinMode(this->m_LPWM, OUTPUT);
 }
-void Motor::setRotation(rotation Rotation)
-{
-  this->m_rotation = Rotation;
-}
+
 
 // Speed entre 0 et 255, le sens de rotation est donc géré via une méthode externe
-int Motor::setSpeed(int speed)
+int Motor::setSpeed(int speed, rotation Rotation)
 {
+  this->m_rotation = Rotation;
   switch (this->m_rotation)
   {
   case rotation::RELEASE :
