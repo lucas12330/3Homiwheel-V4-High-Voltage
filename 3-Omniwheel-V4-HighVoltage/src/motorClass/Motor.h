@@ -1,12 +1,13 @@
 #pragma once
 #include <Arduino.h>
 #include <math.h>
+
+// Instanciation de l'enum class
 enum rotation{RELEASE, FORWARD, BACKWARD};
 
 class Motor
 {
 private:
-  // Instanciation de l'enum class
 
   // Pin Pwm des deux sens d'un seul moteur
   int m_RPWM;
