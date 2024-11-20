@@ -28,8 +28,4 @@ public:
   void changePins(int RPWM, int LPWM);
   // Permet la modification de la vitesse
   int setSpeed(int Speed, rotation Rotation);
-
-
-
-
 };
