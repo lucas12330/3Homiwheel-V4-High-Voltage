@@ -26,7 +26,7 @@ enum class motor{
 };
 
 // Initialisation des fonction
-void move(int speedRotation, int speed, int motor);
+void move(int speedRotation, int speed);
 void equal(int val);
 // Fonction permettant de map tout les joysticks
 void mapJoystick();
@@ -37,9 +37,9 @@ void setSpeedAll(int Speed, rotation Rotation);
 byte error = 0;
 void setup() {
     Serial.begin(9600);
-    error = man.config_gamepad(21, 2, 20, 3);
+    error = man.config_gamepad(21, 10, 20, 11);
     while ( error != 0){
-        error = man.config_gamepad(21, 2, 20, 3);
+        error = man.config_gamepad(21, 10, 20, 11);
         delay(100);
         Serial.println("Erreur de configuration de la manette");
     }
@@ -59,79 +59,45 @@ void loop() {
 
     mapJoystick();
     equal(10);
-    move(joyL_x, joyR_y, 1);
+    move(joyL_x, joyR_y);
     Serial.println(joyL_x);
 
 
 }
 
-void move(int speedRotation, int speed, int motor){
-if (speed < -255 || speed > 255){
-// Permet de sécuriser et d'empecher le passage de n'importe quelle donné en dehor du domaine de définition
-  } else {
-    //
-    if (speed  != 0){
-      if (speed < 0){
-        switch(motor){
-          case 1:
-            m3.setSpeed(abs(speed), BACKWARD);
-            m2.setSpeed(abs(speed), FORWARD);
-            if (speedRotation<0){
-              m1.setSpeed(abs(speedRotation), FORWARD);
-            } else {
-              m1.setSpeed(abs(speedRotation), BACKWARD);
-            }
-            break;
-          
-          case 2:
-            m3.setSpeed(abs(speed), BACKWARD);
-            m1.setSpeed(abs(speed), FORWARD);
-            if (speedRotation<0){
-              m2.setSpeed(abs(speedRotation), FORWARD);
-            } else {
-              m2.setSpeed(abs(speedRotation), BACKWARD);
-            }
-            break;
-
-          case 3:
-            m3.setSpeed(abs(speed), BACKWARD);
-            m2.setSpeed(abs(speed), FORWARD);
-            if (speedRotation<0){
-              m3.setSpeed(abs(speedRotation), FORWARD);
-            } else {
-              m3.setSpeed(abs(speedRotation), BACKWARD);
-            }
-            break;
-        }
-
-
-      } else {
-        if (speed > 0){
-          m1.setSpeed(abs(speed), FORWARD);
-          m2.setSpeed(abs(speed), BACKWARD);
-          if (speedRotation<0){
-            m3.setSpeed(abs(speedRotation), FORWARD);
-          } else {
-            m3.setSpeed(abs(speedRotation), BACKWARD);
-          }
-        }
-
-      }
-    } else {
-      if(speedRotation < 0){
-        setSpeedAll(abs(speedRotation), FORWARD);
-      } else {
-        setSpeedAll(abs(speedRotation), BACKWARD);
-      }
-
+void move(int speedRotation, int speed) {
+    if (speed < -255 || speed > 255 || speedRotation < -255 || speedRotation > 255) {
+        // Sécurisation des valeurs de vitesse
+        return;
     }
-  }
+
+    // Commandes pour les moteurs
+    int motor1Speed = 0; // Moteur 1 : avant-arrière
+    int motor2Speed = 0; // Moteur 2 : avant-arrière
+    int motor3Speed = 0; // Moteur 3 : droite-gauche
+
+    if (speed != 0 || speedRotation != 0) {
+        // Combinaison avant-arrière et rotation
+        motor1Speed = speed + speedRotation; // Avant avec rotation (moteur 1)
+        motor2Speed = -speed + speedRotation; // Arrière avec rotation (moteur 2)
+        motor3Speed = speedRotation; // Droite-gauche avec rotation (moteur 3)
+    }
+
+    // Application des vitesses aux moteurs
+    m1.setSpeed(abs(motor1Speed), motor1Speed >= 0 ? FORWARD : BACKWARD);
+    m2.setSpeed(abs(motor2Speed), motor2Speed >= 0 ? FORWARD : BACKWARD);
+    m3.setSpeed(abs(motor3Speed), motor3Speed >= 0 ? FORWARD : BACKWARD);
 }
+
+
+
+
 void setSpeedAll(int Speed, rotation Rotation){
   m1.setSpeed(Speed, Rotation);
   m2.setSpeed(Speed, Rotation);
   m3.setSpeed(Speed, Rotation);
 }
+
 
 void mapJoystick(){
   joyL_x = map(joyL_x, 0, 255, -255, 255);
